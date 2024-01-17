@@ -1,6 +1,7 @@
 package dataAccessLayer
 
 import (
+	"cine-tickets/configs"
 	dbInterface "cine-tickets/interfaces/dbInterfaces"
 	"fmt"
 	"sync"
@@ -23,6 +24,9 @@ func initDBClients() {
 
 func GetDbByName(name string) error {
 	initDBClients()
-	err := dbClient[name].ConnectDB("user=kamasala.r dbname=kamasala.r sslmode=disable")
+	var err error
+	initDbOnce.Do(func() {
+		err = dbClient[name].ConnectDB(configs.AppConfig.Database.ConnectionString)
+	})
 	return err
 }

@@ -5,7 +5,16 @@ import (
 	serviceInterface "cine-tickets/interfaces/serviceInterfaces"
 )
 
-func InitController() serviceInterface.ReservationService {
+type ServiceControllers struct {
+	ReservationService  serviceInterface.ReservationService
+	AvailabilityService serviceInterface.AvailabilityService
+	TransactionService  serviceInterface.TransactionService
+}
 
-	return serviceController.ReservationServiceController()
+func InitServiceControllers() *ServiceControllers {
+	services := ServiceControllers{}
+	services.ReservationService = serviceController.ReservationServiceController()
+	services.AvailabilityService = serviceController.AvailabilityServiceController()
+	services.TransactionService = serviceController.TransactionServiceController()
+	return &services
 }

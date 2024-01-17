@@ -5,6 +5,6 @@ import (
 )
 
 type ReservationRepository interface {
-	StoreIntoTableHoldTix(*models.ReserveTix) error
+	StoreIntoTableHoldTix(*models.ReserveTix) (string, error)
 	GetInformationByUserId(*models.UserInfo) (*models.ReserveTix, error) // takes user model
 }

@@ -5,6 +5,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type postgresDB struct {
@@ -12,7 +13,7 @@ type postgresDB struct {
 }
 
 func (postgresqlConnector *postgresDB) ConnectDB(connStr string) error {
-	postgres_db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	postgres_db, err := gorm.Open(postgres.Open(connStr), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 	if err != nil {
 		log.Fatal("Error while connecting to DB", err)
 		return err

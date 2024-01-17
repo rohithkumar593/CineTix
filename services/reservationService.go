@@ -1,6 +1,7 @@
 package services
 
 import (
+	"cine-tickets/configs"
 	"cine-tickets/models"
 	FormattersIO "cine-tickets/models/inputFormat"
 	"cine-tickets/repository"
@@ -28,12 +29,20 @@ func (reservation *ReservationService) BookTix(res http.ResponseWriter, req *htt
 		return
 	}
 
-	err = reservation.ReservationRepo.StoreIntoTableHoldTix(reserveTix)
+	transaction_id, err := reservation.ReservationRepo.StoreIntoTableHoldTix(reserveTix)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	bytesString, err := json.Marshal(reserveTix)
+	//generate payment url with call back
+	callBackUrl := "http://localhost" + configs.AppConfig.Server.Host + configs.AppConfig.Server.Port + "/transaction"
+	url, err := reservation.GeneratePaymentUrlWithTransaction(transaction_id, callBackUrl)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	bytesString, err := json.Marshal(url)
 	if err != nil {
 		log.Println(err, "error while formatting response")
 		return
@@ -65,4 +74,12 @@ func (displayInfo *ReservationService) DisplayBooking(res http.ResponseWriter, r
 	}
 	res.Write(bytesString)
 
+}
+
+func (reservation *ReservationService) GeneratePaymentUrlWithTransaction(transactionId string, callBackUrl string) (url *models.PaymentUrl, err error) {
+	var payment models.PaymentUrl
+	//make post request to payment gateway with transactionId
+	payment.Url = "paymentUrl.com/paytome"
+
+	return &payment, nil
 }

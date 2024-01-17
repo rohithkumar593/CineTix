@@ -3,9 +3,13 @@ module cine-tickets
 go 1.20
 
 require (
+	github.com/creasty/defaults v1.7.0
 	github.com/go-chi/chi/v5 v5.0.11
 	github.com/go-playground/validator/v10 v10.16.0
+	github.com/google/uuid v1.5.0
+	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lib/pq v1.10.9
+	github.com/lpernett/godotenv v0.0.0-20230527005122-0de1d4c5ef5e
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )

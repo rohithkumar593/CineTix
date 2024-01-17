@@ -11,7 +11,7 @@ type ReservationRepository struct {
 
 // first param : try -> model which model you are going to use
 
-func (reservationRepo *ReservationRepository) StoreIntoTableHoldTix(ticket *models.ReserveTix) error {
+func (reservationRepo *ReservationRepository) StoreIntoTableHoldTix(ticket *models.ReserveTix) (string, error) {
 
 	// Step 1. Get Postgres Gorm
 	// Step 2. Insert Model into Postgres
@@ -20,17 +20,17 @@ func (reservationRepo *ReservationRepository) StoreIntoTableHoldTix(ticket *mode
 	err := dataAccessLayer.GetDbByName("postgres")
 	if err != nil {
 		log.Fatal("Error while acquiring postgres db", err)
-		return err
+		return "", err
 	}
 
 	postgresClient := dataAccessLayer.GetPostgresClient()
 
 	insertedID := postgresClient.Create(ticket)
 	if insertedID.Error != nil {
-		return insertedID.Error
+		return "", insertedID.Error
 	}
 
-	return nil
+	return ticket.TransactionId, nil
 
 }
 

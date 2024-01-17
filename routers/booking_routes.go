@@ -1,12 +1,16 @@
 package routes
 
 import (
-	serviceInterface "cine-tickets/interfaces/serviceInterfaces"
+	"cine-tickets/controllers"
 
 	"github.com/go-chi/chi/v5"
 )
 
-func InitializeRoutes(router *chi.Mux, serviceController serviceInterface.ReservationService) {
-	router.Post("/bookTix", serviceController.BookTix)
-	router.Post("/displayBooking", serviceController.DisplayBooking)
+func InitializeRoutes(router *chi.Mux, serviceController *controllers.ServiceControllers) {
+	router.Post("/bookTix", serviceController.ReservationService.BookTix)
+	router.Post("/transaction", serviceController.TransactionService.AcceptTransaction)
+	router.Post("/displayBooking", serviceController.ReservationService.DisplayBooking)
+	router.Post("/displaySeats", serviceController.AvailabilityService.DisplaySeats)
+	router.Post("/displayMoviesAndTheatres", serviceController.AvailabilityService.DisplayMoviesAndTheatres)
+
 }
