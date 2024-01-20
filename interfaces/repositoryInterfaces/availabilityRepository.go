@@ -2,9 +2,10 @@ package repositoryInterface
 
 import (
 	"cine-tickets/models"
+	"cine-tickets/responses"
 )
 
 type AvailabilityRepository interface {
-	GetSeatByTheatreId(*models.GetSeatByTheatre) ([]models.Seat, error)
-	GetTheatresAndMoviesByLocation(*models.Theatre) ([]models.Theatre, error)
+	GetSeatByTheatreId(*models.GetSeatByTheatre) *responses.ResponseFormat
+	GetTheatresAndMoviesByLocation(*models.Theatre) *responses.ResponseFormat
 }

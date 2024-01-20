@@ -23,10 +23,7 @@ func (availabilityService *AvailabilityService) DisplaySeats(res http.ResponseWr
 	if err != nil {
 		fmt.Println("Error while formatting input body", err)
 	}
-	seats, err := availabilityService.AvailabilityRepository.GetSeatByTheatreId(seat)
-	if err != nil {
-		fmt.Println("Error while getting seats by theatre id", err)
-	}
+	seats := availabilityService.AvailabilityRepository.GetSeatByTheatreId(seat)
 	byteArray, err := json.Marshal(seats)
 	if err != nil {
 		fmt.Println(err, "error while formatting response")
@@ -48,11 +45,8 @@ func (availabilityService *AvailabilityService) DisplayMoviesAndTheatres(res htt
 	if err != nil {
 		fmt.Println("Error while formatting input", err)
 	}
-	theatres, err := availabilityService.AvailabilityRepository.GetTheatresAndMoviesByLocation(theatre)
-	if err != nil {
-		fmt.Println("Error while getting theaters and movies by location", err)
-		return
-	}
+	theatres := availabilityService.AvailabilityRepository.GetTheatresAndMoviesByLocation(theatre)
+
 	byteArray, err := json.Marshal(theatres)
 	if err != nil {
 		fmt.Println(err, "error while formatting response")
@@ -60,4 +54,3 @@ func (availabilityService *AvailabilityService) DisplayMoviesAndTheatres(res htt
 	}
 	res.Write(byteArray)
 }
-

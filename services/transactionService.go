@@ -28,7 +28,7 @@ func (transaction *TransactionService) AcceptTransaction(res http.ResponseWriter
 		return
 	}
 
-	stateOfTransaction, err := transaction.TransactionRepo.UpdateTransaction(order)
+	stateOfTransaction := transaction.TransactionRepo.UpdateTransaction(order)
 
 	if err != nil {
 		log.Println(err)

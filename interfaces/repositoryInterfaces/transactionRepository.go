@@ -2,8 +2,9 @@ package repositoryInterface
 
 import (
 	"cine-tickets/models"
+	"cine-tickets/responses"
 )
 
 type TransactionRepository interface {
-	UpdateTransaction(*models.Transaction) (models.StateTransaction, error)
+	UpdateTransaction(*models.Transaction) *responses.ResponseFormat
 }
