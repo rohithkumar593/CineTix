@@ -3,19 +3,15 @@ package repository
 import (
 	"cine-tickets/models"
 	dataAccessLayer "cine-tickets/persistence_layer"
+	"cine-tickets/responses"
+	"cine-tickets/utils"
 	"log"
 )
 
 type ReservationRepository struct {
 }
 
-// first param : try -> model which model you are going to use
-
 func (reservationRepo *ReservationRepository) StoreIntoTableHoldTix(ticket *models.ReserveTix) (string, error) {
-
-	// Step 1. Get Postgres Gorm
-	// Step 2. Insert Model into Postgres
-	// Step 3 . Return Response
 
 	err := dataAccessLayer.GetDbByName("postgres")
 	if err != nil {
@@ -34,20 +30,18 @@ func (reservationRepo *ReservationRepository) StoreIntoTableHoldTix(ticket *mode
 
 }
 
-// first param : table name -> try using this
-func (reservationRepo *ReservationRepository) GetInformationByUserId(userInfo *models.UserInfo) (*models.ReserveTix, error) {
+func (reservationRepo *ReservationRepository) GetInformationByUserId(userInfo *models.UserInfo) *responses.ResponseFormat {
 
 	err := dataAccessLayer.GetDbByName("postgres")
 	if err != nil {
-		log.Fatal("Error while acquiring postgres db", err)
-		return nil, err
+		log.Println("Error while acquiring postgres db", err)
+		return utils.RepositoryResponseLayer("Internal Server Error", err)
 	}
 	postgresClient := dataAccessLayer.GetPostgresClient()
 	var reserveTix models.ReserveTix
-	postgresClient.Where("user_id=?", userInfo.UserId).First(&reserveTix).Scan(&reserveTix)
-	return &reserveTix, nil
-	// Step 1. Get Postgres Gorm
-	// Step 2. Find booking by user id
-	// Step 3 . Return Response
-
+	data := postgresClient.Where("user_id=?", userInfo.UserId).First(&reserveTix).Scan(&reserveTix)
+	if data.Error != nil {
+		return utils.RepositoryResponseLayer("Internal Server Error", data.Error)
+	}
+	return utils.RepositoryResponseLayer(reserveTix, nil)
 }

@@ -62,11 +62,8 @@ func (displayInfo *ReservationService) DisplayBooking(res http.ResponseWriter, r
 		log.Fatal(err, "error while formatting input body")
 		return
 	}
-	bookingInfo, err := displayInfo.ReservationRepo.GetInformationByUserId(user)
-	if err != nil {
-		log.Println(err)
-		return
-	}
+	bookingInfo := displayInfo.ReservationRepo.GetInformationByUserId(user)
+
 	bytesString, err := json.Marshal(bookingInfo)
 	if err != nil {
 		log.Println(err, "error while formatting response")
