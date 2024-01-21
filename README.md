@@ -1,2 +1,2 @@
 # CineTix
-Cine Tickets is an backend service for booking movie tickets, here we try to implement the functionalities like seat availability and book seat, display seats booked by the user.
+CineTix is a backend service for booking movie tickets. Here, we aim to implement functionalities such as seat availability, seat booking, and displaying seats booked by the user.
