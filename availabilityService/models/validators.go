@@ -8,7 +8,7 @@ import (
 )
 
 func timeZoneWithoutTimestamp(fl validator.FieldLevel) bool {
-	layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02"
 	data := fl.Field().String()
 	if _, err := time.Parse(layout, data); err != nil {
 		log.Println(err, "error on timezone")

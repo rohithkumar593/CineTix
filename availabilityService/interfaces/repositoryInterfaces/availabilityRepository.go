@@ -6,6 +6,6 @@ import (
 )
 
 type AvailabilityRepository interface {
-	GetSeatByTheatreId(*models.GetSeatByTheatre) *responses.ResponseFormat
-	GetTheatresAndMoviesByLocation(*models.Theatre) *responses.ResponseFormat
+	GetSeatByTheatreId(*models.GetSeatByTheatre) *responses.Response
+	GetTheatresAndMoviesByLocation(*models.Theatre) *responses.Response
 }

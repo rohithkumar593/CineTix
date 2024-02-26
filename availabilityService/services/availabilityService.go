@@ -3,7 +3,7 @@ package services
 import (
 	repositoryInterface "cine-tickets/interfaces/repositoryInterfaces"
 	FormattersIO "cine-tickets/models/inputFormat"
-	"encoding/json"
+	"cine-tickets/utils"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,19 +17,20 @@ func (availabilityService *AvailabilityService) DisplaySeats(res http.ResponseWr
 
 	data, err := io.ReadAll(req.Body)
 	if err != nil {
-		fmt.Println("Error while reading request body", err)
+		fmt.Println("Error while reading request body", err) // wrap res with 422 result
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
+		return
 	}
 	seat, err := FormattersIO.AvailabilityServiceSeatsFormatIO(data)
 	if err != nil {
-		fmt.Println("Error while formatting input body", err)
+		fmt.Println("Error while formatting input body", err) // wrap res with 422 result
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
+		return
+
 	}
 	seats := availabilityService.AvailabilityRepository.GetSeatByTheatreId(seat)
-	byteArray, err := json.Marshal(seats)
-	if err != nil {
-		fmt.Println(err, "error while formatting response")
-		return
-	}
-	res.Write(byteArray)
+	utils.GetResponseFormatter(req).WithOkResult(seats)
+
 }
 
 func (availabilityService *AvailabilityService) DisplayMoviesAndTheatres(res http.ResponseWriter, req *http.Request) {
@@ -39,18 +40,16 @@ func (availabilityService *AvailabilityService) DisplayMoviesAndTheatres(res htt
 	data, err := io.ReadAll(req.Body)
 	if err != nil {
 		fmt.Println("Error while reading request body", err)
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
+		return
 	}
 
 	theatre, err := FormattersIO.AvailabilityServiceTheatresFormatIO(data)
 	if err != nil {
 		fmt.Println("Error while formatting input", err)
-	}
-	theatres := availabilityService.AvailabilityRepository.GetTheatresAndMoviesByLocation(theatre)
-
-	byteArray, err := json.Marshal(theatres)
-	if err != nil {
-		fmt.Println(err, "error while formatting response")
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
 		return
 	}
-	res.Write(byteArray)
+	theatres := availabilityService.AvailabilityRepository.GetTheatresAndMoviesByLocation(theatre)
+	utils.GetResponseFormatter(req).WithOkResult(theatres)
 }

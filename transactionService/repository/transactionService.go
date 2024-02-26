@@ -11,7 +11,7 @@ import (
 type TransactionRepository struct {
 }
 
-func (transaction *TransactionRepository) UpdateTransaction(order *models.Transaction) *responses.ResponseFormat {
+func (transaction *TransactionRepository) UpdateTransaction(order *models.Transaction) *responses.Response {
 	var statusInformation models.StateTransaction
 	err := dataAccessLayer.GetDbByName("postgres")
 	if err != nil {
@@ -20,7 +20,7 @@ func (transaction *TransactionRepository) UpdateTransaction(order *models.Transa
 	postgresClient := dataAccessLayer.GetPostgresClient()
 	status := postgresClient.Model(&models.ReserveTix{}).Where("transaction_id=?", order.TransactionId).Update("status", configs.AppConfig.Booking.Confirmed)
 	if status.Error != nil {
-		return utils.RepositoryResponseLayer("Internal Server Error", status.Error)
+		return utils.RepositoryResponseLayer(nil, status.Error)
 	}
 	if status.RowsAffected == 1 {
 		statusInformation.State = "Confirmed"
