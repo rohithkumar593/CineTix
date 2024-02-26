@@ -2,11 +2,21 @@ package utils
 
 import (
 	"cine-tickets/responses"
+	"net/http"
 )
 
-func RepositoryResponseLayer(response any, error error) *responses.ResponseFormat {
-	data := new(responses.ResponseFormat)
+func RepositoryResponseLayer(response any, err error) *responses.Response {
+	data := new(responses.Response)
 	data.Body = response
-	data.Error = error
+	if err != nil {
+		data.Error = err.Error()
+	}
 	return data
+}
+
+func GetResponseFormatter(r *http.Request) *responses.ResponseFormat {
+	responseFormat := responses.ResponseFormat{
+		Request: r,
+	}
+	return &responseFormat
 }

@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"cine-tickets/responses"
+	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -14,11 +16,22 @@ func InitializeMiddlewares(router *chi.Mux) {
 
 func someHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			responseStruct := r.Context().Value(responses.ResponseKey("response")).(responses.Response)
+			WriteResponse(responseStruct, w)
 
-		func() {
-			w.Header().Set("Content-Type", "application/json")
+			
+
 		}()
 		next.ServeHTTP(w, r)
+
 	}
 	return http.HandlerFunc(fn)
+}
+
+func WriteResponse(response responses.Response, w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response)
+
 }

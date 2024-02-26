@@ -5,7 +5,7 @@ import (
 	"cine-tickets/models"
 	FormattersIO "cine-tickets/models/inputFormat"
 	"cine-tickets/repository"
-	"encoding/json"
+	"cine-tickets/utils"
 	"io"
 	"log"
 	"net/http"
@@ -20,60 +20,55 @@ func (reservation *ReservationService) BookTix(res http.ResponseWriter, req *htt
 	log.Println("started reservation")
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
-		log.Fatal(err, "error while reading input body")
+		log.Println(err, "error while reading input body")
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
 		return
 	}
 	reserveTix, err = FormattersIO.ReservationServiceIOFormatBookTix(body)
 	if err != nil {
-		log.Fatal(err, "error while formatting input body")
+		log.Println(err, "error while formatting input body")
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
 		return
 	}
 
-	transaction_id, err := reservation.ReservationRepo.StoreIntoTableHoldTix(reserveTix)
-	if err != nil {
+	transactionResponse := reservation.ReservationRepo.StoreIntoTableHoldTix(reserveTix)
+	if transactionResponse.Error != "" {
 		log.Println(err)
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(transactionResponse.Error)
 		return
 	}
 	//generate payment url with call back
 	callBackUrl := "http://localhost" + configs.AppConfig.Server.Host + configs.AppConfig.Server.Port + "/transaction"
-	url, err := reservation.GeneratePaymentUrlWithTransaction(transaction_id, callBackUrl)
+	url, err := reservation.GeneratePaymentUrlWithTransaction(transactionResponse.Body, callBackUrl)
 	if err != nil {
-		log.Println(err)
+		log.Println(err, url)
+		utils.GetResponseFormatter(req).WithBadRequest(err.Error())
 		return
 	}
 
-	bytesString, err := json.Marshal(url)
-	if err != nil {
-		log.Println(err, "error while formatting response")
-		return
-	}
-	res.Write(bytesString)
+	utils.GetResponseFormatter(req).WithOkResult(utils.RepositoryResponseLayer(transactionResponse, nil))
 }
 
 func (displayInfo *ReservationService) DisplayBooking(res http.ResponseWriter, req *http.Request) {
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		log.Fatal(err, "error while reading input body")
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
 		return
 	}
 
 	user, err := FormattersIO.ReservationServiceIOFormatUserInfo(body)
 	if err != nil {
 		log.Fatal(err, "error while formatting input body")
+		utils.GetResponseFormatter(req).WithUnprocessableEntity(err.Error())
 		return
 	}
 	bookingInfo := displayInfo.ReservationRepo.GetInformationByUserId(user)
-
-	bytesString, err := json.Marshal(bookingInfo)
-	if err != nil {
-		log.Println(err, "error while formatting response")
-		return
-	}
-	res.Write(bytesString)
+	utils.GetResponseFormatter(req).WithOkResult(bookingInfo)
 
 }
 
-func (reservation *ReservationService) GeneratePaymentUrlWithTransaction(transactionId string, callBackUrl string) (url *models.PaymentUrl, err error) {
+func (reservation *ReservationService) GeneratePaymentUrlWithTransaction(transaction any, callBackUrl string) (url *models.PaymentUrl, err error) {
 	var payment models.PaymentUrl
 	//make post request to payment gateway with transactionId
 	payment.Url = "paymentUrl.com/paytome"

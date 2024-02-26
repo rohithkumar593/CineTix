@@ -32,3 +32,8 @@ type ReserveTix struct {
 	Status        int           `json:"status"  gorm:"column:status"`
 	CreatedAt     time.Time     `json:"booking_timestamp"  gorm:"column:booking_timestamp" `
 }
+
+
+func (ReserveTix) TableName() string {
+	return "holdtix"
+}
