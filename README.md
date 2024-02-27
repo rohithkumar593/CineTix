@@ -4,6 +4,6 @@ CineTix is a backend service for booking movie tickets. Here, we aim to implemen
 
 Design:
 
+![image](https://github.com/rohithkumar593/CineTix/assets/54279129/c058313b-da22-4b07-8cb7-c2d0f499abed)
 
-![image](https://github.com/rohithkumar593/CineTix/assets/54279129/38778fc8-1845-4931-9a5b-3000474b7bb1)
 
